@@ -1,4 +1,4 @@
-package pratica.CadastroEscola.Students;
+package pratica.CadastroEscola.Techers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping
-public class StudentController {
+public class TeacherController {
 
 }
