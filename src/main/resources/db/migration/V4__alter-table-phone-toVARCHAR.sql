@@ -1,0 +1,1 @@
+alter table tb_student alter column phone TYPE varchar(30);

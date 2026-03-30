@@ -19,6 +19,7 @@ public class StudentModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name")
@@ -28,7 +29,7 @@ public class StudentModel {
     private String email;
 
     @Column(name = "phone")
-    private int phone;
+    private String phone;
 
     @Column(name = "gender")
     private char gender;
@@ -39,5 +40,5 @@ public class StudentModel {
 
     @Column(name = "birthdate")
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate birthDate;
+    private LocalDate birthdate;
 }

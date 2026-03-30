@@ -15,18 +15,19 @@ public class StudentController {
     @Autowired
     StudentRepository repository;
 
-    @GetMapping("/list")
+    @GetMapping("/getall")
     public ResponseEntity getAll(){
         List<StudentModel> studentModelList = repository.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(studentModelList);
     }
 
     @PostMapping("/post")
-    public ResponseEntity post(@RequestBody StudentDTO StudentDTO){
-        var StudentModel = new StudentModel();
+    public ResponseEntity post(@RequestBody StudentDTO DTO){
+        StudentModel Studentmodel = new StudentModel();
+        BeanUtils.copyProperties(DTO, Studentmodel);
 
-        BeanUtils.copyProperties(StudentDTO, StudentModel);
+        repository.save(Studentmodel);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(StudentModel));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Studentmodel);
     }
 }

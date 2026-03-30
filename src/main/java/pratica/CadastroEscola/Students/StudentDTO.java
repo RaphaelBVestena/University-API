@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public record StudentDTO(
+
         String name,
 
         @JsonFormat(pattern = "dd-MM-yyyy")
@@ -14,7 +15,7 @@ public record StudentDTO(
 
         String email,
 
-        int phone,
+        String phone,
 
         char gender
 ){
