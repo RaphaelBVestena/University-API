@@ -1,1 +1,0 @@
-ALTER TABLE tb_student ADD email varchar(100) UNIQUE;

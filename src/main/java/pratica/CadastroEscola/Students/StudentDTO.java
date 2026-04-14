@@ -1,22 +1,36 @@
 package pratica.CadastroEscola.Students;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.UUID;
 
-public record StudentDTO(
+@Data
+public class StudentDTO{
+        @NotNull
+        private String name;
 
-        String name,
-
+        @NotNull
         @JsonFormat(pattern = "dd-MM-yyyy")
-        LocalDate birthdate,
+        private LocalDate birthDate;
 
-        String email,
+        @Email
+        private String email;
 
-        String phone,
+        @Pattern(regexp = "^[0-9]+$")
+        private String phone;
 
-        char gender
-){
+        @Pattern(regexp = "^[MFmf]$", message = "gênero deve ser M ou F")
+        private String gender;
+
+        private UUID courseId;
 }
