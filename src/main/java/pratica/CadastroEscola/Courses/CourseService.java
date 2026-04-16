@@ -92,7 +92,7 @@ public class CourseService {
     }
 
 
-    //DELETE
+    //DELETE a Course
     public void deleteById(UUID id){
         if(!courseRepository.existsById(id)){
             throw new ResourceNotFoundException("curso não encontrado");

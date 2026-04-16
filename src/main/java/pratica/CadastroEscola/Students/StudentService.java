@@ -68,6 +68,7 @@ public class StudentService {
 
         //se o DTO vier com Curso.Id
         if (studentDTO.getCourseId() != null) {
+
             //Resgata o curso referente ao ID que veio no DTO
             CourseModel courseModel = courseRepository.findById(studentDTO.getCourseId())
                     .orElseThrow(() -> new ResourceNotFoundException("curso", "id", studentDTO.getCourseId()));
