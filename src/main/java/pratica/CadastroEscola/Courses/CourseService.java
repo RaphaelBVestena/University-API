@@ -1,7 +1,11 @@
 package pratica.CadastroEscola.Courses;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pratica.CadastroEscola.Exceptions.BadRequestException;
 import pratica.CadastroEscola.Exceptions.ResourceNotFoundException;
 import pratica.CadastroEscola.Students.StudentRepository;
@@ -41,6 +45,13 @@ public class CourseService {
     }
 
 
+    public Page<CourseResponseDTO> getAllPaged(Pageable pageable){
+
+        Page<CourseModel> courseModels = courseRepository.findAll(pageable);
+
+        return courseModels.map(CourseMapper::toResponseDTO);
+    }
+
     public CourseResponseDTO getById(UUID courseId){
 
         //busca o curso referente ao ID recebido
@@ -53,6 +64,7 @@ public class CourseService {
 
 
     //POST
+    @Transactional
     public CourseResponseDTO post(CourseDTO courseDTO){
 
         //cria um novo curso
@@ -94,6 +106,7 @@ public class CourseService {
 
 
     //PATCH
+    @Transactional
     public CourseResponseDTO patchById(UUID id, CourseDTO courseDTO){
 
         //valida se a requisição não veio vazia

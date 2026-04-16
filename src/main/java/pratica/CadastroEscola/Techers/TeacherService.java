@@ -1,10 +1,15 @@
 package pratica.CadastroEscola.Techers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pratica.CadastroEscola.Exceptions.BadRequestException;
 import pratica.CadastroEscola.Exceptions.ResourceNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,8 +20,28 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
 
 
-    public List<TeacherModel> getAll(){
-         return teacherRepository.findAll();
+    public List<TeacherResponseDTO> getAll(){
+
+        //monta uma lista com todos os professores do banco
+         List<TeacherModel> teacherModels = teacherRepository.findAll();
+
+         //cria uma Lista de objetos de resposta
+         List<TeacherResponseDTO> teacherResponseDTOs = new ArrayList<>();
+
+         //adiciona os professor do banco na lista de objetos de resposta
+         for (TeacherModel teacherModel : teacherModels){
+             teacherResponseDTOs.add(TeacherMapper.toResponseDTO(teacherModel));
+         }
+
+         //retorna a lista de objetos de resposta
+         return teacherResponseDTOs;
+    }
+
+    public Page<TeacherResponseDTO> getAllPaged(Pageable pageable){
+
+        Page<TeacherModel> teacherModels = teacherRepository.findAll(pageable);
+
+        return teacherModels.map(TeacherMapper::toResponseDTO);
     }
 
     public TeacherResponseDTO getById(UUID id){
@@ -26,6 +51,7 @@ public class TeacherService {
         return TeacherMapper.toResponseDTO(teacherModel);
     }
 
+    @Transactional
     public TeacherResponseDTO post(TeacherDTO teacherDTO){
 
         //valida se o email já está cadastrado
@@ -55,6 +81,7 @@ public class TeacherService {
         teacherRepository.deleteById(id);
     }
 
+    @Transactional
     public TeacherResponseDTO patchById(UUID id, TeacherDTO teacherDTO){
         TeacherModel teacherModel = teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("professor", "id", id));
@@ -90,8 +117,12 @@ public class TeacherService {
 
     //valida se já existe um professor com o Email recebido. Evita duplicidade
     public void emailBeingUsedTeacher(String email){
-        if (teacherRepository.existsByEmail(email)){
-            throw new BadRequestException("email já cadastrado");
+
+        if (email != null) {
+
+            if (teacherRepository.existsByEmail(email)) {
+                throw new BadRequestException("email já cadastrado");
+            }
         }
     }
 }

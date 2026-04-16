@@ -2,6 +2,7 @@ package pratica.CadastroEscola.Courses;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,11 +19,19 @@ public class CourseController {
 
     private final CourseService service;
 
-    @GetMapping
+
+    @GetMapping()
+    public ResponseEntity getAllPaged(Pageable pageable){
+
+        return new ResponseEntity(service.getAllPaged(pageable), HttpStatus.OK);
+    }
+
+    @GetMapping("/getAll")
     public ResponseEntity getAll() {
 
         return new ResponseEntity(service.getAll(), HttpStatus.OK);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity getById(@PathVariable UUID id){

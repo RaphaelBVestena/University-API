@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
                 Map.of(
                         "status", 409,
                         "error", "Conflict",
-                        "message", "Violação de integridade de dados"
+                        "message", "conflito interno no banco de dados. cheque os dados inseridos"
                 )
         );
     }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.apache.bcel.Repository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +27,12 @@ public class StudentController {
     @GetMapping
     public ResponseEntity getAll() {
         return new ResponseEntity(service.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity getAllPaged(Pageable pageable){
+
+        return new ResponseEntity(service.getAllPaged(pageable), HttpStatus.OK);
     }
 
     //Create a new Student record

@@ -1,7 +1,11 @@
 package pratica.CadastroEscola.Students;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pratica.CadastroEscola.Courses.CourseModel;
 import pratica.CadastroEscola.Courses.CourseRepository;
 import pratica.CadastroEscola.Exceptions.BadRequestException;
@@ -38,7 +42,16 @@ public class StudentService {
     }
 
 
+    public Page<StudentResponseDTO> getAllPaged(Pageable pageable){
+
+        Page<StudentModel> studentModels = studentRepository.findAll(pageable);
+
+        return studentModels.map(StudentMapper::toResponseDTO);
+    }
+
+
     //post a new student
+    @Transactional
     public StudentResponseDTO post(StudentDTO studentDTO){
 
         //valida se a requisição não veio vazia
@@ -78,6 +91,7 @@ public class StudentService {
     }
 
     //update name, phone or email of a recorded student by its id
+    @Transactional
     public StudentResponseDTO patchById(UUID id, StudentDTO studentDTO){
 
         //valida se a requisição não veio vazia
