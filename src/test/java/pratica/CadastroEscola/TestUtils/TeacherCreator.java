@@ -94,6 +94,5 @@ public class TeacherCreator {
                 .gender("T")
                 .birthDate(LocalDate.parse("2005-12-12"))
                 .build();
-
     }
 }

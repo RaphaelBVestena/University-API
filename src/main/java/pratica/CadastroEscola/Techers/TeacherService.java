@@ -2,7 +2,6 @@ package pratica.CadastroEscola.Techers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,11 +65,8 @@ public class TeacherService {
         //insere os dados recebidos no novo professor
         TeacherMapper.dtoToModel(teacherDTO, teacherModel);
 
-        //salva o novo professor
-        teacherRepository.save(teacherModel);
-
-        //retorna os dados do novo professor
-        return TeacherMapper.toResponseDTO(teacherModel);
+        //salva os dados e retorna os dados do novo professor
+        return TeacherMapper.toResponseDTO(teacherRepository.save(teacherModel));
     }
 
     public void deleteById(UUID id){
@@ -95,15 +91,13 @@ public class TeacherService {
         //atualiza o registro atual do professor com os dados recebidos
         TeacherMapper.updateModel(teacherModel, teacherDTO);
 
-        //salva o registro do professor
-        teacherRepository.save(teacherModel);
-
-        return TeacherMapper.toResponseDTO(teacherModel);
+        //salva o registro do professor e retorna um objeto de resposta
+        return TeacherMapper.toResponseDTO(teacherRepository.save(teacherModel));
     }
 
 
     //Valida se a requisição veio vazia. Se vier, lança exceção
-    public static void validateTeacherDTO(TeacherDTO teacherDTO){
+    public void validateTeacherDTO(TeacherDTO teacherDTO){
         if (
             teacherDTO.getName() == null &&
             teacherDTO.getBirthDate() == null &&
