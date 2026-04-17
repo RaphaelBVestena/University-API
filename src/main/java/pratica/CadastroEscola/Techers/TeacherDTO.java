@@ -3,6 +3,7 @@ package pratica.CadastroEscola.Techers;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class TeacherDTO {
         @NotBlank
         @Size(max = 100, message = "o nome do professor não pode conter mais de 100 caractéres.")

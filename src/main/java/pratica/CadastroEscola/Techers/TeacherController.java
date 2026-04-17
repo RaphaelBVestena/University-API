@@ -2,6 +2,8 @@ package pratica.CadastroEscola.Techers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,32 +19,33 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/teacher")
 @RequiredArgsConstructor
+@Log4j2
 public class TeacherController {
 
     private final TeacherService service;
 
     @GetMapping
-    public ResponseEntity getAll() {
+    public ResponseEntity<List<TeacherResponseDTO>> getAll() {
 
         return new ResponseEntity(service.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/")
-    public ResponseEntity getAllPaged(Pageable pageable){
+    public ResponseEntity<Page<TeacherResponseDTO>> getAllPaged(Pageable pageable){
 
-        return new ResponseEntity(service.getAllPaged(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(service.getAllPaged(pageable), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getById(@PathVariable UUID id){
+    public ResponseEntity<TeacherResponseDTO> getById(@PathVariable UUID id){
 
-        return new ResponseEntity(service.getById(id), HttpStatus.OK);
+        return new ResponseEntity<>(service.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity post(@Valid @RequestBody TeacherDTO teacherDTO){
+    public ResponseEntity<TeacherResponseDTO> post(@Valid @RequestBody TeacherDTO teacherDTO){
 
-        return new ResponseEntity(service.post(teacherDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.post(teacherDTO), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -53,7 +56,7 @@ public class TeacherController {
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity patchById(@PathVariable UUID id, @RequestBody TeacherDTO dto){
+    public ResponseEntity<TeacherResponseDTO> patchById(@PathVariable UUID id, @RequestBody TeacherDTO dto){
 
         return new ResponseEntity(service.patchById(id, dto), HttpStatus.OK);
     }

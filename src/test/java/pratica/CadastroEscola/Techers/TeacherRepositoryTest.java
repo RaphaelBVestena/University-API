@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import pratica.CadastroEscola.TestUtils.TeacherCreator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ class TeacherRepositoryTest {
     @DisplayName("Save creates a new teacher when successful")
     public void save_PersistTeacher_WhenSuccessful(){
 
-        TeacherModel newTeacher = createTeacher();
+        TeacherModel newTeacher = TeacherCreator.createNewTeacher();
         TeacherModel savedTeacher = this.teacherRepository.save(newTeacher);
 
         Assertions.assertThat(savedTeacher).isNotNull();
@@ -36,7 +37,7 @@ class TeacherRepositoryTest {
     @DisplayName("Save updates the teacher when successful")
     public void save_UpdateTeacher_WhenSuccessful(){
 
-        TeacherModel newTeacher = createTeacher();
+        TeacherModel newTeacher = TeacherCreator.createNewTeacher();
         TeacherModel savedTeacher = this.teacherRepository.save(newTeacher);
 
         savedTeacher.setName("Updated Teacher test name");
@@ -60,7 +61,7 @@ class TeacherRepositoryTest {
     @DisplayName("Delete removes teacher when successful")
     public void delete_RemovesTeacher_WhenSuccessful(){
 
-        TeacherModel newTeacher = createTeacher();
+        TeacherModel newTeacher = TeacherCreator.createNewTeacher();
         TeacherModel savedTeacher = this.teacherRepository.save(newTeacher);
 
         this.teacherRepository.deleteById(savedTeacher.getId());
@@ -74,7 +75,7 @@ class TeacherRepositoryTest {
     @DisplayName("Exists By Email returns True when successful" )
     public void existsByEmail_ReturnsTrue_WhenSuccessful(){
 
-        TeacherModel newTeacher = createTeacher();
+        TeacherModel newTeacher = TeacherCreator.createNewTeacher();
         TeacherModel savedTeacher = this.teacherRepository.save(newTeacher);
 
         boolean existsByEmail = this.teacherRepository.existsByEmail(savedTeacher.getEmail());
@@ -87,7 +88,7 @@ class TeacherRepositoryTest {
     @DisplayName("Exists By Email returns False when successful" )
     public void existsByEmail_ReturnsFalse_WhenSuccessful(){
 
-        TeacherModel newTeacher = createTeacher();
+        TeacherModel newTeacher = TeacherCreator.createNewTeacher();
         TeacherModel savedTeacher = this.teacherRepository.save(newTeacher);
 
         boolean existsByEmail = this.teacherRepository.existsByEmail("non-existent email");
@@ -101,7 +102,7 @@ class TeacherRepositoryTest {
     public void findAll_returns2PagesWithContent_WhenSuccessful(){
         int amount = 10;
 
-        this.teacherRepository.saveAll(createTeachersList(amount));
+        this.teacherRepository.saveAll(TeacherCreator.createNewTeachersList(amount));
 
         Page<TeacherModel> teachersPage1 = this.teacherRepository.findAll(PageRequest.of(0, amount/2));
         Page<TeacherModel> teachersPage2 = this.teacherRepository.findAll(PageRequest.of(1, amount/2));
@@ -124,36 +125,5 @@ class TeacherRepositoryTest {
 
         Assertions.assertThat(teachersPage).isNotNull();
         Assertions.assertThat(teachersPage.getContent()).isEmpty();
-    }
-
-
-
-    private TeacherModel createTeacher(){
-        return TeacherModel.builder()
-                .name("Teacher test Name")
-                .email("Teacher test Email")
-                .phone("teacher test Phone")
-                .gender("T")
-                .birthDate(LocalDate.parse("2005-12-12"))
-                .build();
-    }
-
-    private List<TeacherModel> createTeachersList(Integer amount){
-        List<TeacherModel> teacherModels = new ArrayList<>();
-
-        for (int i = 0; i <= amount; i++){
-            teacherModels.add(TeacherModel.builder()
-                    .id(null)
-                    .name(String.valueOf(i))
-                    .email(null)
-                    .phone(String.valueOf(i))
-                    .gender("T")
-                    .birthDate(LocalDate.parse("2005-12-12"))
-                    .creationTime(null)
-                    .updateTime(null)
-                    .build());
-        }
-
-        return teacherModels;
     }
 }

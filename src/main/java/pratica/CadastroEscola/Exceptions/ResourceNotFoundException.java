@@ -12,6 +12,6 @@ public class ResourceNotFoundException extends RuntimeException{
     }
 
     public ResourceNotFoundException(String model, String field, Object value){
-        super(String.format("%s na encontrado com %s: %s", model, field, value));
+        super(String.format("%s não encontrado com %s: %s", model, field, value));
     }
 }
