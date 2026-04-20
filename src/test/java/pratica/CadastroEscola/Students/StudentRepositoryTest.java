@@ -7,62 +7,114 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import pratica.CadastroEscola.Students.StudentModel;
+import pratica.CadastroEscola.Courses.CourseModel;
+import pratica.CadastroEscola.Courses.CourseRepository;
+import pratica.CadastroEscola.TestUtils.StudentCreator;
+import pratica.CadastroEscola.TestUtils.CourseCreator;
 
-
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @DataJpaTest
 class StudentRepositoryTest {
-    
+
     @Autowired
     private StudentRepository studentRepository;
 
-    @Test
-    @DisplayName("Save creates a new Student when successful")
-    public void save_PersistStudent_WhenSuccessful(){
+    @Autowired
+    private CourseRepository courseRepository;
 
-        StudentModel newStudent = createStudent();
-        StudentModel savedStudent = this.studentRepository.save(newStudent);
+
+    //  SAVE
+
+    @Test
+    @DisplayName("Save creates a new student with course when successful")
+    public void save_PersistStudentWithCourse_WhenSuccessful(){
+
+        CourseModel existentCourse = this.courseRepository.save(
+                CourseCreator.createToBeSavedCourse()
+        );
+
+        StudentModel studentToBeSaved =
+                StudentCreator.createToBeSavedStudentWithCourse(existentCourse);
+
+        StudentModel savedStudent = this.studentRepository.save(studentToBeSaved);
+
+        this.studentRepository.flush();
 
         Assertions.assertThat(savedStudent).isNotNull();
         Assertions.assertThat(savedStudent.getId()).isNotNull();
+        Assertions.assertThat(savedStudent.getCourse()).isEqualTo(existentCourse);
     }
 
     @Test
-    @DisplayName("Save updates the Student when successful")
+    @DisplayName("Save creates a new student with no course when successful")
+    public void save_PersistStudentWithNoCourse_WhenSuccessful(){
+
+        StudentModel studentToBeSaved =
+                StudentCreator.createToBeSavedStudent();
+
+        StudentModel savedStudent = this.studentRepository.save(studentToBeSaved);
+
+        this.studentRepository.flush();
+
+        Assertions.assertThat(savedStudent).isNotNull();
+        Assertions.assertThat(savedStudent.getId()).isNotNull();
+        Assertions.assertThat(savedStudent.getCourse()).isNull();
+    }
+
+    @Test
+    @DisplayName("Save updates the student when successful")
     public void save_UpdateStudent_WhenSuccessful(){
 
-        StudentModel newStudent = createStudent();
-        StudentModel savedStudent = this.studentRepository.save(newStudent);
+        CourseModel existentCourse = this.courseRepository.save(
+                CourseCreator.createToBeSavedCourse()
+        );
+
+        StudentModel studentToBeSaved = StudentCreator.createToBeSavedStudentWithCourse(existentCourse);
+
+        StudentModel savedStudent = this.studentRepository.save(studentToBeSaved);
 
         savedStudent.setName("Updated Student test name");
-        savedStudent.setEmail("Updated Student test Email");
-        savedStudent.setPhone("Updated Student test Phone");
-        savedStudent.setGender("u");
 
-        StudentModel updatedStudent = this.studentRepository.save(savedStudent);
+        StudentModel reloadedStudent = this.studentRepository.findById(savedStudent.getId()).get();
 
-        Assertions.assertThat(updatedStudent).isNotNull();
-        Assertions.assertThat(updatedStudent.getId()).isNotNull();
+        this.studentRepository.flush();
 
-        Assertions.assertThat(updatedStudent.getId()).isEqualTo(savedStudent.getId());
-        Assertions.assertThat(updatedStudent.getName()).isEqualTo(savedStudent.getName());
-        Assertions.assertThat(updatedStudent.getEmail()).isEqualTo(savedStudent.getEmail());
-        Assertions.assertThat(updatedStudent.getPhone()).isEqualTo(savedStudent.getPhone());
-        Assertions.assertThat(updatedStudent.getGender()).isEqualTo(savedStudent.getGender());
+        Assertions.assertThat(reloadedStudent).isNotNull();
+        Assertions.assertThat(reloadedStudent.getId()).isNotNull();
+
+        Assertions.assertThat(reloadedStudent.getId()).isEqualTo(savedStudent.getId());
+        Assertions.assertThat(reloadedStudent.getName()).isEqualTo("Updated Student test name");
+        Assertions.assertThat(reloadedStudent.getCourse()).isEqualTo(existentCourse);
     }
+
+    @Test
+    @DisplayName("SaveAll saves a student list when successful")
+    public void saveAll_PersistStudentList_WhenSuccessful(){
+        int amount = 10;
+
+        List<StudentModel> toBeSavedStudentList = StudentCreator.createToBeSavedStudentList(amount);
+
+        List<StudentModel> savedStudentList = this.studentRepository.saveAll(toBeSavedStudentList);
+
+        this.studentRepository.flush();
+
+        Assertions.assertThat(savedStudentList)
+                .isNotEmpty()
+                .hasSize(amount);
+    }
+
+
+    // DELETE
 
     @Test
     @DisplayName("Delete removes student when successful")
     public void delete_RemovesStudent_WhenSuccessful(){
 
-        StudentModel newStudent = createStudent();
-        StudentModel savedStudent = this.studentRepository.save(newStudent);
+        StudentModel studentToBeSaved = StudentCreator.createToBeSavedStudent();
+        StudentModel savedStudent = this.studentRepository.save(studentToBeSaved);
 
         this.studentRepository.deleteById(savedStudent.getId());
 
@@ -71,12 +123,15 @@ class StudentRepositoryTest {
         Assertions.assertThat(studentOptional).isEmpty();
     }
 
+
+    //EXISTS BY EMAIL
+
     @Test
     @DisplayName("Exists By Email returns True when successful" )
     public void existsByEmail_ReturnsTrue_WhenSuccessful(){
 
-        StudentModel newStudent = createStudent();
-        StudentModel savedStudent = this.studentRepository.save(newStudent);
+        StudentModel studentToBeSaved = StudentCreator.createToBeSavedStudent();
+        StudentModel savedStudent = this.studentRepository.saveAndFlush(studentToBeSaved);
 
         boolean existsByEmail = this.studentRepository.existsByEmail(savedStudent.getEmail());
 
@@ -88,13 +143,111 @@ class StudentRepositoryTest {
     @DisplayName("Exists By Email returns False when successful" )
     public void existsByEmail_ReturnsFalse_WhenSuccessful(){
 
-        StudentModel newStudent = createStudent();
-        StudentModel savedStudent = this.studentRepository.save(newStudent);
+        StudentModel studentToBeSaved = StudentCreator.createToBeSavedStudent();
+        StudentModel savedStudent = this.studentRepository.saveAndFlush(studentToBeSaved);
 
-        boolean existsByEmail = this.studentRepository.existsByEmail("non-existent email");
+        boolean existsByEmail = this.studentRepository.existsByEmail("non-existent name");
 
         Assertions.assertThat(existsByEmail).isFalse();
         Assertions.assertThat(savedStudent.getEmail()).isNotEmpty();
+    }
+
+
+    //EXISTS BY COURSE ID
+
+    @Test
+    @DisplayName("Exists By CourseId returns True when successful" )
+    public void existsByCourseId_ReturnsTrue_WhenSuccessful(){
+
+        CourseModel existentCourse = this.courseRepository.save(
+                CourseCreator.createToBeSavedCourse()
+        );
+
+        StudentModel toBeSavedStudent =
+                StudentCreator.createToBeSavedStudentWithCourse(existentCourse);
+
+        StudentModel savedStudent = this.studentRepository.save(toBeSavedStudent);
+
+        this.studentRepository.flush();
+
+        boolean studentExistsByCourseId = this.studentRepository.existsByCourseId(
+                savedStudent.getCourse().getId());
+
+        Assertions.assertThat(studentExistsByCourseId).isTrue();
+        Assertions.assertThat(savedStudent.getId()).isNotNull();
+        Assertions.assertThat(savedStudent.getCourse()).isEqualTo(existentCourse);
+
+    }
+
+    @Test
+    @DisplayName("Exists By CourseId returns False when successful" )
+    public void existsByCourseId_ReturnsFalse_WhenSuccessful(){
+
+        CourseModel existentCourse = this.courseRepository.save(
+                CourseCreator.createToBeSavedCourse()
+        );
+
+        StudentModel toBeSavedStudent =
+                StudentCreator.createToBeSavedStudentWithCourse(existentCourse);
+
+        StudentModel savedStudent = this.studentRepository.save(toBeSavedStudent);
+
+        this.studentRepository.flush();
+
+        boolean studentExistsByCourseId = this.studentRepository.existsByCourseId(UUID.randomUUID());
+
+        Assertions.assertThat(studentExistsByCourseId).isFalse();
+        Assertions.assertThat(savedStudent.getId()).isNotNull();
+        Assertions.assertThat(savedStudent.getCourse()).isEqualTo(existentCourse);
+    }
+
+
+    //FIND BY ID
+
+    @Test
+    @DisplayName("FindById returns student when found")
+    void findById_ReturnsStudent_WhenSuccessful() {
+        StudentModel savedStudent = studentRepository.save(StudentCreator.createToBeSavedStudent());
+
+        Optional<StudentModel> response = studentRepository.findById(savedStudent.getId());
+
+        Assertions.assertThat(response).isPresent();
+    }
+
+    @Test
+    @DisplayName("FindById returns empty when not found")
+    void findById_ReturnsEmpty_WhenNotFound() {
+        Optional<StudentModel> response = studentRepository.findById(UUID.randomUUID());
+
+        Assertions.assertThat(response).isEmpty();
+    }
+
+
+    //FIND ALL
+
+    @Test
+    @DisplayName("FindAll returns a Students List when successful" )
+    public void findAll_ReturnsStudentsList_WhenSuccessful(){
+        int amount = 10;
+
+        List<StudentModel> studentList = StudentCreator.createToBeSavedStudentList(amount);
+
+        this.studentRepository.saveAll(studentList);
+
+        List<StudentModel> resultList = this.studentRepository.findAll();
+
+        Assertions.assertThat(resultList).isNotEmpty();
+        Assertions.assertThat(resultList.size()).isEqualTo(amount);
+    }
+
+    @Test
+    @DisplayName("FindAll returns empty List when successful" )
+    public void findAll_ReturnsEmptyList_WhenSuccessful(){
+
+        List<StudentModel> resultList = this.studentRepository.findAll();
+
+        Assertions.assertThat(resultList).isEmpty();
+        Assertions.assertThat(resultList).isNotNull();
     }
 
     @Test
@@ -102,7 +255,7 @@ class StudentRepositoryTest {
     public void findAll_returns2PagesWithContent_WhenSuccessful(){
         int amount = 10;
 
-        this.studentRepository.saveAll(createStudentsList(amount));
+        this.studentRepository.saveAll(StudentCreator.createToBeSavedStudentList(amount));
 
         Page<StudentModel> studentsPage1 = this.studentRepository.findAll(PageRequest.of(0, amount/2));
         Page<StudentModel> studentsPage2 = this.studentRepository.findAll(PageRequest.of(1, amount/2));
@@ -115,6 +268,9 @@ class StudentRepositoryTest {
 
         Assertions.assertThat(studentsPage1.getNumber()).isEqualTo(0);
         Assertions.assertThat(studentsPage2.getNumber()).isEqualTo(1);
+
+        Assertions.assertThat(studentsPage1.isFirst()).isTrue();
+        Assertions.assertThat(studentsPage2.isLast()).isTrue();
     }
 
     @Test
@@ -122,65 +278,8 @@ class StudentRepositoryTest {
     public void findAll_ReturnsEmptyPage_WhenSuccessful(){
 
         Page<StudentModel> studentsPage = this.studentRepository.findAll(PageRequest.of(0, 20));
-        
+
         Assertions.assertThat(studentsPage).isNotNull();
         Assertions.assertThat(studentsPage.getContent()).isEmpty();
-    }
-
-    @Test
-    @DisplayName("exists By Course Id returns true when successful")
-    void existsByCourseId_ReturnsTrue_WhenSuccessful() {
-        StudentModel newStudent = createStudent();
-        StudentModel savedStudent = this.studentRepository.save(newStudent);
-
-        boolean existsByCourse = this.studentRepository.existsByCourseId(null);
-
-        Assertions.assertThat(existsByCourse).isTrue();
-    }
-
-    @Test
-    @DisplayName("exists By Course Id returns false when successful")
-    void existsByCourseId_Returnsfalse_WhenSuccessful() {
-        UUID randomId = UUID.randomUUID();
-
-        StudentModel newStudent = createStudent();
-        StudentModel savedStudent = this.studentRepository.save(newStudent);
-
-        boolean existsByCourse = this.studentRepository.existsByCourseId(randomId);
-
-        Assertions.assertThat(existsByCourse).isFalse();
-        Assertions.assertThat(randomId).isNotNull();
-        Assertions.assertThat(savedStudent.getCourse()).isNull();
-    }
-
-
-    private StudentModel createStudent(){
-        return StudentModel.builder()
-                .name("Student test Name")
-                .email("Student test Email")
-                .phone("Student test Phone")
-                .gender("T")
-                .course(null)
-                .birthDate(LocalDate.parse("2005-12-12"))
-                .build();
-    }
-
-    private List<StudentModel> createStudentsList(Integer amount){
-        List<StudentModel> StudentModels = new ArrayList<>();
-
-        for (int i = 0; i <= amount; i++){
-            StudentModels.add(StudentModel.builder()
-                    .id(null)
-                    .name(String.valueOf(i))
-                    .email(null)
-                    .phone(String.valueOf(i))
-                    .gender("T")
-                    .birthDate(LocalDate.parse("2005-12-12"))
-                    .creationTime(null)
-                    .updateTime(null)
-                    .build());
-        }
-
-        return StudentModels;
     }
 }

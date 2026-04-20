@@ -1,4 +1,4 @@
-package pratica.CadastroEscola.Techers;
+package pratica.CadastroEscola.Teachers;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;

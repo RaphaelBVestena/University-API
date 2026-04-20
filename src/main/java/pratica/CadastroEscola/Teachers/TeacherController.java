@@ -1,4 +1,4 @@
-package pratica.CadastroEscola.Techers;
+package pratica.CadastroEscola.Teachers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -8,10 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pratica.CadastroEscola.Courses.CourseDTO;
-import pratica.CadastroEscola.Courses.CourseModel;
-import pratica.CadastroEscola.Courses.CourseRepository;
-import pratica.CadastroEscola.Courses.CourseService;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,13 +20,13 @@ public class TeacherController {
 
     private final TeacherService service;
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<TeacherResponseDTO>> getAll() {
 
         return new ResponseEntity(service.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<Page<TeacherResponseDTO>> getAllPaged(Pageable pageable){
 
         return new ResponseEntity<>(service.getAllPaged(pageable), HttpStatus.OK);

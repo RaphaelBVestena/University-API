@@ -49,6 +49,15 @@ public class StudentService {
         return studentModels.map(StudentMapper::toResponseDTO);
     }
 
+    public StudentResponseDTO getById(UUID id){
+
+        StudentModel studentModel = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("aluno", "id", id));
+
+        return StudentMapper.toResponseDTO(studentModel);
+
+    }
+
 
     //post a new student
     @Transactional
@@ -76,9 +85,10 @@ public class StudentService {
             //insere o curso no estudante
             studentModel.setCourse(courseModel);
         }
-        studentRepository.save(studentModel);
 
-        return StudentMapper.toResponseDTO(studentModel);
+        // salva o estudante e retorna um ResponseDTO
+        return StudentMapper.toResponseDTO(
+                studentRepository.save(studentModel));
     }
 
     //delete a student by its id
@@ -122,16 +132,13 @@ public class StudentService {
             }
         }
 
-        //Salva as alterações
-        studentRepository.save(studentmodel);
-
         //Retorna o ResponseDTO referente ao registro atualizado
-        return StudentMapper.toResponseDTO(studentmodel);
+        return StudentMapper.toResponseDTO(studentRepository.save(studentmodel));
     }
 
 
     //Valida se a requisição veio vazia. Se vier, lança exceção
-    public static void validateStudentDTO(StudentDTO studentDTO){
+    public void validateStudentDTO(StudentDTO studentDTO){
         if (
                 studentDTO.getName() == null &&
                         studentDTO.getBirthDate() == null &&
@@ -148,20 +155,6 @@ public class StudentService {
     public void emailBeingUsedStudent(String email){
         if (studentRepository.existsByEmail(email)){
             throw new BadRequestException("email já cadastrado");
-        }
-    }
-
-    //Função que Mapeia um CursoModel para um SUMÁRIO, para inseri-lo no Json do Student
-    public static CourseSummaryDTO toCourseSummary(CourseModel courseModel){
-
-        if (courseModel == null){
-            return null;
-
-        }else{
-            return CourseSummaryDTO.builder()
-                    .id(courseModel.getId())
-                    .name(courseModel.getName())
-                    .build();
         }
     }
 }

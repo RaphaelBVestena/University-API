@@ -2,15 +2,14 @@ package pratica.CadastroEscola.Courses;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pratica.CadastroEscola.Exceptions.BadRequestException;
 import pratica.CadastroEscola.Exceptions.ResourceNotFoundException;
 import pratica.CadastroEscola.Students.StudentRepository;
-import pratica.CadastroEscola.Techers.TeacherModel;
-import pratica.CadastroEscola.Techers.TeacherRepository;
+import pratica.CadastroEscola.Teachers.TeacherModel;
+import pratica.CadastroEscola.Teachers.TeacherRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,16 +85,16 @@ public class CourseService {
 
             courseModel.setTeacher(teacherModel);
         }
-        courseRepository.save(courseModel);
 
-        return CourseMapper.toResponseDTO(courseModel);
+        return CourseMapper.toResponseDTO(
+                courseRepository.save(courseModel));
     }
 
 
     //DELETE a Course
     public void deleteById(UUID id){
         if(!courseRepository.existsById(id)){
-            throw new ResourceNotFoundException("curso não encontrado");
+            throw new ResourceNotFoundException("curso", "id", id);
         }
 
         if (studentRepository.existsByCourseId(id)){
@@ -143,7 +142,7 @@ public class CourseService {
     }
 
 
-    public static void validateCourseDTO(CourseDTO courseDTO){
+    public void validateCourseDTO(CourseDTO courseDTO){
         if (
                 courseDTO.getName() == null &&
                         courseDTO.getSemester() == null &&
@@ -158,18 +157,6 @@ public class CourseService {
     public void nameBeingUsedCourse(String name){
         if (courseRepository.existsByName(name)){
             throw new BadRequestException("nome já cadastrado");
-        }
-    }
-
-    public static TeacherSummaryDTO toTeacherSummary(TeacherModel teacherModel){
-        if (teacherModel == null){
-            return null;
-
-        }else{
-           return TeacherSummaryDTO.builder()
-                   .id(teacherModel.getId())
-                   .name(teacherModel.getName())
-                   .build();
         }
     }
 }

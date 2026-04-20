@@ -1,9 +1,8 @@
 package pratica.CadastroEscola.TestUtils;
 
-import pratica.CadastroEscola.Techers.TeacherDTO;
-import pratica.CadastroEscola.Techers.TeacherMapper;
-import pratica.CadastroEscola.Techers.TeacherModel;
-import pratica.CadastroEscola.Techers.TeacherResponseDTO;
+import pratica.CadastroEscola.Teachers.TeacherDTO;
+import pratica.CadastroEscola.Teachers.TeacherModel;
+import pratica.CadastroEscola.Teachers.TeacherResponseDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,37 +12,30 @@ import java.util.UUID;
 
 public class TeacherCreator {
 
-    public static TeacherModel createNewTeacher(){
-        TeacherModel teacherModel = new TeacherModel();
+    // TeacherModel //
 
-        TeacherMapper.dtoToModel(createTeacherRequestDTO(), teacherModel);
-
-        return teacherModel;
-    }
-
-
-    public static TeacherModel createValidTeacher(){
+    public static TeacherModel createToBeSavedTeacher(){
         return TeacherModel.builder()
-                .id(UUID.randomUUID())
-                .name("Valid Teacher test Name")
-                .email("Valid Teacher test Email")
-                .phone("Valid teacher test Phone")
+                .id(null)
+                .name("To Be Saved Teacher test name")
+                .email("tobesaved@teacher.com")
+                .phone("999999999")
                 .gender("T")
                 .birthDate(LocalDate.parse("2005-12-12"))
-                .creationTime(LocalDateTime.now())
-                .updateTime(LocalDateTime.now())
+                .creationTime(null)
+                .updateTime(null)
                 .build();
     }
 
+    public static List<TeacherModel> createToBeSavedTeacherList(int amount){
 
-    public static List<TeacherModel> createNewTeachersList(int amount){
-        List<TeacherModel> teacherModels = new ArrayList<>();
+        List<TeacherModel> list = new ArrayList<TeacherModel>();
 
         for (int i = 0; i < amount; i++){
-            teacherModels.add(TeacherModel.builder()
+            list.add(TeacherModel.builder()
                     .id(null)
-                    .name("new Teacher" + String.valueOf(i))
-                    .email("New Teacher Test Email " + String.valueOf(i))
+                    .name("To Be Saved Teacher test name " + i)
+                    .email("tobesaved" + i + "@teacher.com")
                     .phone(String.valueOf(i))
                     .gender("T")
                     .birthDate(LocalDate.parse("2005-12-12"))
@@ -51,46 +43,84 @@ public class TeacherCreator {
                     .updateTime(null)
                     .build());
         }
-
-        return teacherModels;
+        return list;
     }
 
+    public static TeacherModel createValidTeacher(){
+        return TeacherModel.builder()
+                .id(UUID.randomUUID())
+                .name("Valid Teacher test name")
+                .email("valid@teacher.com")
+                .phone("999999999")
+                .gender("T")
+                .birthDate(LocalDate.parse("2005-12-12"))
+                .creationTime(LocalDateTime.of(2020, 1, 1, 10, 0))
+                .updateTime(LocalDateTime.of(2020, 1, 1, 10, 0))
+                .build();
+    }
 
-    public static List<TeacherModel> createValidTeachersList(int amount){
+    public static List<TeacherModel> createValidTeacherList(int amount){
 
-        List<TeacherModel> teacherModels = new ArrayList<TeacherModel>();
+        List<TeacherModel> list = new ArrayList<TeacherModel>();
 
         for (int i = 0; i < amount; i++){
-            teacherModels.add(TeacherModel.builder()
+            list.add(TeacherModel.builder()
                     .id(UUID.randomUUID())
-                    .name("valid Teacher " + String.valueOf(i))
-                    .email("Valid Teacher Test Email " + String.valueOf(i))
+                    .name("Valid Teacher test name " + i)
+                    .email("valid" + i + "@teacher.com")
                     .phone(String.valueOf(i))
                     .gender("T")
                     .birthDate(LocalDate.parse("2005-12-12"))
-                    .creationTime(LocalDateTime.now())
-                    .updateTime(LocalDateTime.now())
+                    .creationTime(LocalDateTime.of(2020, 1, 1, 10, 0))
+                    .updateTime(LocalDateTime.of(2020, 1, 1, 10, 0))
                     .build());
         }
-        return teacherModels;
+        return list;
     }
 
+
+    // ResponseDTO //
 
     public static TeacherResponseDTO createTeacherResponseDTO(){
-        return TeacherMapper.toResponseDTO(createValidTeacher());
+        return TeacherResponseDTO.builder()
+                .id(UUID.randomUUID())
+                .name("Valid Teacher test name")
+                .email("valid@teacher.com")
+                .phone("999999999")
+                .gender("T")
+                .birthDate(LocalDate.parse("2005-12-12"))
+                .creationTime(LocalDateTime.of(2020, 1, 1, 10, 0))
+                .updateTime(LocalDateTime.of(2020, 1, 1, 10, 0))
+                .build();
     }
-
 
     public static List<TeacherResponseDTO> createTeacherResponseDTOList(int amount){
-        return createNewTeachersList(amount).
-                stream().map(TeacherMapper::toResponseDTO).toList();
+
+        List<TeacherResponseDTO> list = new ArrayList<TeacherResponseDTO>();
+
+        for (int i = 0; i < amount; i++){
+            list.add(TeacherResponseDTO.builder()
+                    .id(UUID.randomUUID())
+                    .name("Response Teacher test name " + i)
+                    .email("response" + i + "@teacher.com")
+                    .phone(String.valueOf(i))
+                    .gender("T")
+                    .birthDate(LocalDate.parse("2005-12-12"))
+                    .creationTime(LocalDateTime.of(2020, 1, 1, 10, 0))
+                    .updateTime(LocalDateTime.of(2020, 1, 1, 10, 0))
+                    .build());
+        }
+        return list;
     }
+
+
+    // RequestDTO //
 
     public static TeacherDTO createTeacherRequestDTO(){
         return TeacherDTO.builder()
-                .name("New Teacher test Name")
-                .email("New Teacher test Email")
-                .phone("New teacher test Phone")
+                .name("Request Teacher test name")
+                .email("request@teacher.com")
+                .phone("999999999")
                 .gender("T")
                 .birthDate(LocalDate.parse("2005-12-12"))
                 .build();

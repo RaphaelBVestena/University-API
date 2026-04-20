@@ -1,6 +1,6 @@
 package pratica.CadastroEscola.Courses;
 
-import static pratica.CadastroEscola.Courses.CourseService.toTeacherSummary;
+import pratica.CadastroEscola.Teachers.TeacherModel;
 
 public class CourseMapper {
 
@@ -28,6 +28,18 @@ public class CourseMapper {
 
         if (courseDTO.getSemester() != null){
             courseModel.setSemester(courseDTO.getSemester());
+        }
+    }
+
+    public static TeacherSummaryDTO toTeacherSummary(TeacherModel teacherModel){
+        if (teacherModel == null){
+            return null;
+
+        }else{
+            return TeacherSummaryDTO.builder()
+                    .id(teacherModel.getId())
+                    .name(teacherModel.getName())
+                    .build();
         }
     }
 }

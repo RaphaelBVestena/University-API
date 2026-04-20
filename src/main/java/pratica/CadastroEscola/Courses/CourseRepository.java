@@ -13,4 +13,6 @@ public interface CourseRepository extends JpaRepository<CourseModel, UUID> {
     Page<CourseModel> findAll(Pageable pageable);
 
     boolean existsByName(String name);
+
+    boolean existsByTeacherId(UUID id);
 }

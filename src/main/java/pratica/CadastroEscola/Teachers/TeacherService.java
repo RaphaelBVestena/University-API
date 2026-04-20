@@ -1,10 +1,11 @@
-package pratica.CadastroEscola.Techers;
+package pratica.CadastroEscola.Teachers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pratica.CadastroEscola.Courses.CourseRepository;
 import pratica.CadastroEscola.Exceptions.BadRequestException;
 import pratica.CadastroEscola.Exceptions.ResourceNotFoundException;
 
@@ -17,6 +18,8 @@ import java.util.UUID;
 public class TeacherService {
 
     private final TeacherRepository teacherRepository;
+
+    private final CourseRepository courseRepository;
 
 
     public List<TeacherResponseDTO> getAll(){
@@ -72,6 +75,10 @@ public class TeacherService {
     public void deleteById(UUID id){
         if (!teacherRepository.existsById(id)){
             throw new ResourceNotFoundException("professor", "id", id);
+        }
+
+        if (courseRepository.existsByTeacherId(id)){
+            throw new BadRequestException("Professor possui curso cadastrado");
         }
 
         teacherRepository.deleteById(id);

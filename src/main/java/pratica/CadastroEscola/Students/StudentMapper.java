@@ -1,6 +1,6 @@
 package pratica.CadastroEscola.Students;
 
-import static pratica.CadastroEscola.Students.StudentService.toCourseSummary;
+import pratica.CadastroEscola.Courses.CourseModel;
 
 public class StudentMapper {
 
@@ -48,6 +48,20 @@ public class StudentMapper {
 
         if (studentDTO.getGender() != null){
             studentModel.setGender(studentDTO.getGender());
+        }
+    }
+
+    //Função que Mapeia um CursoModel para um SUMÁRIO, para inseri-lo no Json do Student
+    public static CourseSummaryDTO toCourseSummary(CourseModel courseModel){
+
+        if (courseModel == null){
+            return null;
+
+        }else{
+            return CourseSummaryDTO.builder()
+                    .id(courseModel.getId())
+                    .name(courseModel.getName())
+                    .build();
         }
     }
 }

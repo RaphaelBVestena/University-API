@@ -1,6 +1,4 @@
-package pratica.CadastroEscola.Techers;
-
-import pratica.CadastroEscola.Exceptions.BadRequestException;
+package pratica.CadastroEscola.Teachers;
 
 public class TeacherMapper {
 
@@ -21,6 +19,7 @@ public class TeacherMapper {
                 .name(teacherModel.getName())
                 .birthDate(teacherModel.getBirthDate())
                 .email(teacherModel.getEmail())
+                .phone(teacherModel.getPhone())
                 .gender(teacherModel.getGender())
                 .creationTime(teacherModel.getCreationTime())
                 .updateTime(teacherModel.getUpdateTime())

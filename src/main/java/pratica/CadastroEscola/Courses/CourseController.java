@@ -2,6 +2,7 @@ package pratica.CadastroEscola.Courses;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,40 +22,40 @@ public class CourseController {
 
 
     @GetMapping()
-    public ResponseEntity getAllPaged(Pageable pageable){
+    public ResponseEntity<Page<CourseResponseDTO>> getAllPaged(Pageable pageable){
 
-        return new ResponseEntity(service.getAllPaged(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(service.getAllPaged(pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/getAll")
-    public ResponseEntity getAll() {
+    @GetMapping("/all")
+    public ResponseEntity<List<CourseResponseDTO>> getAll() {
 
-        return new ResponseEntity(service.getAll(), HttpStatus.OK);
+        return new ResponseEntity<>(service.getAll(), HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity getById(@PathVariable UUID id){
+    public ResponseEntity<CourseResponseDTO> getById(@PathVariable UUID id){
 
-        return new ResponseEntity(service.getById(id), HttpStatus.OK);
+        return new ResponseEntity<>(service.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity post(@Valid @RequestBody CourseDTO courseDTO){
+    public ResponseEntity<CourseResponseDTO> post(@Valid @RequestBody CourseDTO courseDTO){
 
-        return new ResponseEntity(service.post(courseDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(service.post(courseDTO), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteById(@PathVariable UUID id){
+    public ResponseEntity<Void> deleteById(@PathVariable UUID id){
         service.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity patchById(@PathVariable UUID id, @RequestBody CourseDTO courseDTO){
+    public ResponseEntity<CourseResponseDTO> patchById(@PathVariable UUID id, @RequestBody CourseDTO courseDTO){
 
-        return new ResponseEntity(service.patchById(id, courseDTO), HttpStatus.OK);
+        return new ResponseEntity<>(service.patchById(id, courseDTO), HttpStatus.OK);
     }
 }

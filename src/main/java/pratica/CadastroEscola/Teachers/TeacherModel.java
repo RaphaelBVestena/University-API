@@ -1,4 +1,4 @@
-package pratica.CadastroEscola.Techers;
+package pratica.CadastroEscola.Teachers;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
