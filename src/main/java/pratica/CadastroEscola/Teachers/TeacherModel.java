@@ -23,6 +23,7 @@ public class TeacherModel {
     @Id
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "teacher_id")
     private UUID id;
 
     @Column(name = "name",

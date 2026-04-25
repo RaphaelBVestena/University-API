@@ -23,7 +23,7 @@ public class StudentModel {
     @Id
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
+    @Column(name = "student_id")
     private UUID id;
 
     @Column(name = "name",

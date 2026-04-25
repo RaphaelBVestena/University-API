@@ -21,6 +21,7 @@ public class CourseModel {
     @Id
     @UuidGenerator
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "course_id")
     private UUID id;
 
     @Column(length = 150,
