@@ -1,21 +1,19 @@
 package pratica.CadastroEscola.Security.User;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import pratica.CadastroEscola.Security.Login.LoginDTO.LoginRequest;
+import pratica.CadastroEscola.Security.Login.LoginDTO.LoginRequestDTO;
 import pratica.CadastroEscola.Security.Role.Role;
 
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table("tb_users")
-@RequiredArgsConstructor
+@Table(name = "tb_users")
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
-@Builder
 public class User {
 
     @Id
@@ -39,7 +37,7 @@ public class User {
     @Column(name = "roles")
     private Set<Role> roles;
 
-    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder){
-        return passwordEncoder.matches(loginRequest.password(), this.password);
+    public boolean isLoginCorrect(LoginRequestDTO loginRequestDTO, PasswordEncoder passwordEncoder){
+        return passwordEncoder.matches(loginRequestDTO.password(), this.password);
     }
 }

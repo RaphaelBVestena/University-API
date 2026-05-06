@@ -1,7 +1,5 @@
 package pratica.CadastroEscola.Security.Login;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,13 +10,18 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pratica.CadastroEscola.Security.Login.LoginDTO.LoginRequest;
-import pratica.CadastroEscola.Security.Login.LoginDTO.LoginResponse;
+import pratica.CadastroEscola.Security.Login.LoginDTO.LoginRequestDTO;
+import pratica.CadastroEscola.Security.Login.LoginDTO.LoginResponseDTO;
+import pratica.CadastroEscola.Security.Role.Role;
+import pratica.CadastroEscola.Security.User.User;
 import pratica.CadastroEscola.Security.User.UserRepository;
 
 import java.time.Instant;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 public class LoginController {
 
     private final BCryptPasswordEncoder passwordEncoder;
@@ -27,34 +30,34 @@ public class LoginController {
 
     private final UserRepository userRepository;
 
-    public LoginController(BCryptPasswordEncoder passwordEncoder, JwtEncoder jwtEncoder, UserRepository userRepository) {
-        this.passwordEncoder = passwordEncoder;
-        this.jwtEncoder = jwtEncoder;
-        this.userRepository = userRepository;
-    }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO){
 
-        var user = userRepository.findByUsername(loginRequest.username());
+        Optional<User> user = userRepository.findByUsername(loginRequestDTO.username());
 
-        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, passwordEncoder) ){
+        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequestDTO, passwordEncoder)) {
             throw new BadCredentialsException("user or password is invalid!");
         }
 
-        var now  = Instant.now();
+            Instant now = Instant.now();
+            Long expiresIn = 300L;
 
-        var expiresIn = 300L;
+            String scopes = user.get().getRoles()
+                    .stream()
+                    .map(Role::getName)
+                    .collect(Collectors.joining(" "));
 
-        var claims = JwtClaimsSet.builder()
-                .issuer("MyBackEnd")
-                .subject(user.get().getId().toString())
-                .expiresAt(now.plusSeconds(expiresIn))
-                .issuedAt(now)
-                .build();
+            JwtClaimsSet claims = JwtClaimsSet.builder()
+                    .issuer("MyBackEnd")
+                    .subject(user.get().getId().toString())
+                    .expiresAt(now.plusSeconds(expiresIn))
+                    .issuedAt(now)
+                    .claim("scope", scopes)
+                    .build();
 
-        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+            String jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
-        return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));
+            return ResponseEntity.ok(new LoginResponseDTO(jwtValue, expiresIn));
     }
 }

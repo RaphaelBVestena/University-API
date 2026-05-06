@@ -10,6 +10,7 @@ import pratica.CadastroEscola.Security.User.User;
 import pratica.CadastroEscola.Security.User.UserRepository;
 
 import java.sql.SQLOutput;
+import java.util.Optional;
 import java.util.Set;
 
 @Configuration
@@ -31,9 +32,9 @@ public class AdminUserConfig implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
-        var roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
+        Role roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
 
-        var userAdmin = userRepository.findByUsername("admin");
+        Optional<User> userAdmin = userRepository.findByUsername("admin");
 
         userAdmin.ifPresentOrElse(
                 user -> {

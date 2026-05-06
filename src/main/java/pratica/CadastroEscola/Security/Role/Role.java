@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Entity
 @Data
-@Table("tb_roles")
+@Table(name = "tb_roles")
 @RequiredArgsConstructor
 public class Role {
 
@@ -18,9 +18,17 @@ public class Role {
     private String name;
 
     public enum Values{
-        BASIC,
-        ADMIN;
+        BASIC(1L),
+        ADMIN(2L);
 
         long roleId;
+
+        Values(long roleId){
+            this.roleId = roleId;
+        }
+
+        public long getRoleId(){
+            return roleId;
+        }
     }
 }
