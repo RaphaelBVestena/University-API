@@ -2,7 +2,11 @@ package pratica.CadastroEscola.Security.Login;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -28,29 +32,29 @@ public class LoginController {
 
     private final JwtEncoder jwtEncoder;
 
-    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
 
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO){
 
-        Optional<User> user = userRepository.findByUsername(loginRequestDTO.username());
+            var usernamePassword = new UsernamePasswordAuthenticationToken(loginRequestDTO.username(), loginRequestDTO.password());
 
-        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequestDTO, passwordEncoder)) {
-            throw new BadCredentialsException("user or password is invalid!");
-        }
+            Authentication auth = authenticationManager.authenticate(usernamePassword);
+
+            User user = (User) auth.getPrincipal();
 
             Instant now = Instant.now();
             Long expiresIn = 300L;
 
-            String scopes = user.get().getRoles()
+            String scopes = user.getAuthorities()
                     .stream()
-                    .map(Role::getName)
+                    .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(" "));
 
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer("MyBackEnd")
-                    .subject(user.get().getId().toString())
+                    .subject(user.getId().toString())
                     .expiresAt(now.plusSeconds(expiresIn))
                     .issuedAt(now)
                     .claim("scope", scopes)

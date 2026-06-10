@@ -1,9 +1,11 @@
 package pratica.CadastroEscola.Security.Config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import pratica.CadastroEscola.Exceptions.ResourceNotFoundException;
 import pratica.CadastroEscola.Security.Role.Role;
 import pratica.CadastroEscola.Security.Role.RoleRepository;
 import pratica.CadastroEscola.Security.User.User;
@@ -14,25 +16,22 @@ import java.util.Optional;
 import java.util.Set;
 
 @Configuration
+@RequiredArgsConstructor
 public class AdminUserConfig implements CommandLineRunner {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    private BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public AdminUserConfig(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
 
-        Role roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
+        Role roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name())
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
         Optional<User> userAdmin = userRepository.findByUsername("admin");
 

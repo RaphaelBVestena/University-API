@@ -19,6 +19,16 @@ target/
 *.iml
 *.ipr
 
+### JWT
+app.key
+app.pub
+
+### Environment
+*.env
+.env
+.env.local
+.env.*.local
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

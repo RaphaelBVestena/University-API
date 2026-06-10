@@ -59,17 +59,19 @@ public class TeacherService {
         //valida se o email já está cadastrado
         emailBeingUsedTeacher(teacherDTO.getEmail());
 
-        //cria um novo professor
-        TeacherModel teacherModel = new TeacherModel();
-
         //checa se a requisição não veio vazia
         validateTeacherDTO(teacherDTO);
+
+        //cria um novo professor
+        TeacherModel teacherModel = new TeacherModel();
 
         //insere os dados recebidos no novo professor
         TeacherMapper.dtoToModel(teacherDTO, teacherModel);
 
         //salva os dados e retorna os dados do novo professor
-        return TeacherMapper.toResponseDTO(teacherRepository.save(teacherModel));
+        TeacherModel savedTeacher = teacherRepository.save(teacherModel);
+
+        return TeacherMapper.toResponseDTO(savedTeacher);
     }
 
     public void deleteById(UUID id){

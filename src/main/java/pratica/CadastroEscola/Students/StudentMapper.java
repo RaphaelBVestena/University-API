@@ -15,7 +15,6 @@ public class StudentMapper {
     }
 
     public static StudentResponseDTO toResponseDTO(StudentModel studentModel){
-
         return StudentResponseDTO.builder()
                 .id(studentModel.getId())
                 .name(studentModel.getName())
@@ -51,9 +50,8 @@ public class StudentMapper {
         }
     }
 
-    //Função que Mapeia um CursoModel para um SUMÁRIO, para inseri-lo no Json do Student
+    //Função que Mapeia um CourseModel para um SUMÁRIO, para inseri-lo no Json do Student
     public static CourseSummaryDTO toCourseSummary(CourseModel courseModel){
-
         if (courseModel == null){
             return null;
 

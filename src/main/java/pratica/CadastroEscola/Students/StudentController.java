@@ -42,7 +42,7 @@ public class StudentController {
         return new ResponseEntity<>(studentService.getById(id), HttpStatus.OK);
     }
 
-    //Create a new Student record
+    //Create a new Student
     @PostMapping
     public ResponseEntity<StudentResponseDTO> post(@Valid @RequestBody StudentDTO studentDTO){
 
@@ -58,7 +58,7 @@ public class StudentController {
         return ResponseEntity.noContent().build();
     }
 
-    //Update a property of a recorded student
+    //Update a property of a registered student
     @PatchMapping("/{id}")
     public ResponseEntity<StudentResponseDTO> patchById(@PathVariable UUID id, @RequestBody StudentDTO studentDTO){
 

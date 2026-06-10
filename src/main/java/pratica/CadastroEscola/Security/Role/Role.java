@@ -3,12 +3,15 @@ package pratica.CadastroEscola.Security.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.io.Serializable;
 
 @Entity
 @Data
 @Table(name = "tb_roles")
 @RequiredArgsConstructor
-public class Role {
+public class Role implements GrantedAuthority{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +19,11 @@ public class Role {
     private Long id;
 
     private String name;
+
+    @Override
+    public String getAuthority() {
+        return "ROLE_" + this.name;
+    }
 
     public enum Values{
         BASIC(1L),

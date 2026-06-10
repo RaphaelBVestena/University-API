@@ -4,12 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pratica.CadastroEscola.Exceptions.BadRequestException;
+import pratica.CadastroEscola.Exceptions.ResourceNotFoundException;
 import pratica.CadastroEscola.Security.Role.Role;
 import pratica.CadastroEscola.Security.Role.RoleRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +29,14 @@ public class UserService {
 
 
     public void saveNewUser(UserRequestDTO userRequest) {
-        Role basicRole = roleRepository.findByName(Role.Values.BASIC.name());
 
         if (userRepository.existsByUsername(userRequest.username())) {
             throw new BadRequestException("username já cadastrado");
         }
+
+        Role basicRole = roleRepository.findByName(Role.Values.BASIC.name())
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+
 
         User newUser = new User();
 
@@ -38,10 +47,19 @@ public class UserService {
         userRepository.save(newUser);
     }
 
-    public List<User> getAllUsers() {
 
+    public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
 
-        return users;
+        return users.stream()
+                .map(user -> new UserResponseDTO(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getRoles()
+                                .stream()
+                                .map(Role::getName)
+                                .collect(Collectors.toSet())
+                ))
+                .toList();
     }
 }
